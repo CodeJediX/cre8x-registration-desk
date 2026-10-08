@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#080704">
+  <title>Check-in Desk · Cre8x 3.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="checkin">
+  <div class="preloader" data-preloader role="status" aria-label="Loading Cre8x Olympus Command"><div class="preloader-grid" aria-hidden="true"></div><div class="preloader-core"><div class="glitch-logo" aria-hidden="true"><img class="glitch-base" src="assets/cre8x-logo.png" alt=""><img class="glitch-layer glitch-a" src="assets/cre8x-logo.png" alt=""><img class="glitch-layer glitch-b" src="assets/cre8x-logo.png" alt=""></div><span class="loader-kicker">OLYMPUS NETWORK // CRE8X 3.0</span><div class="loader-track"><i></i></div><small>INITIALIZING REGISTRATION COMMAND</small></div></div>
+  <div class="ambient" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="index.html" aria-label="Cre8x 3.0 Olympus Command home"><img class="brand-logo" src="assets/cre8x-logo.png" alt="Cre8x 3.0"></a>
+      <nav class="main-nav" aria-label="Primary navigation"><span class="nav-caption">Command</span><a class="nav-link" href="index.html"><i>⌂</i><span>Overview</span></a><a class="nav-link active" href="checkin.html"><i>⌁</i><span>Check-in desk</span><b class="nav-count" data-pending-count>10</b></a><a class="nav-link" href="teams.html"><i>△</i><span>Finalist teams</span></a><a class="nav-link" href="reports.html"><i>⌗</i><span>Reports</span></a></nav>
+      <div class="sidebar-orbit" aria-hidden="true"><span class="orbit-dot"></span><span class="orbit-ring"></span><span class="orbit-core">Ω</span></div>
+      <div class="sidebar-foot"><span class="signal"><i></i> System online</span><small>Grand Finale · Colombo</small></div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar"><button class="icon-button mobile-menu" data-menu-toggle aria-label="Open navigation">☰</button><div class="topbar-title"><span>DELEGATE OPERATIONS</span><strong>Check-in desk</strong></div><div class="topbar-actions"><button class="command-trigger" data-search-trigger><span>⌕</span> Search <kbd>Ctrl K</kbd></button><div class="live-chip"><i></i><span>Live</span><b data-clock>00:00</b></div><button class="avatar">CR</button></div></header>
+
+      <main class="content checkin-content">
+        <section class="page-intro reveal">
+          <div><span class="eyebrow">GATE I · ARRIVALS</span><h1>Delegate <em>check-in.</em></h1><p>Verify attendance, update delegates, and clear each team for the finale.</p></div>
+          <div class="intro-stats"><span><small>VERIFIED</small><strong data-checked-count>0</strong></span><i></i><span><small>AWAITING</small><strong data-pending-count>10</strong></span></div>
+        </section>
+
+        <section class="desk-toolbar reveal delay-1">
+          <button class="step-button" data-prev-team aria-label="Previous team">←</button>
+          <label class="team-select-wrap"><span>ACTIVE TEAM</span><select data-team-select aria-label="Select team"></select></label>
+          <button class="step-button" data-next-team aria-label="Next team">→</button>
+          <div class="toolbar-spacer"></div>
+          <button class="button ghost compact" data-mark-all>Mark all present</button>
+          <button class="button primary compact" data-confirm-team>Confirm team <i>↗</i></button>
+        </section>
+
+        <section class="active-team-layout reveal delay-2">
+          <article class="team-profile gold-frame" data-team-profile></article>
+          <article class="member-manifest panel">
+            <div class="section-heading"><div><span class="eyebrow">DELEGATE MANIFEST</span><h2 data-manifest-title>Team members</h2></div><span class="manifest-count" data-member-count>0 / 0 present</span></div>
+            <div class="member-list" data-member-list></div>
+            <div class="desk-notes"><label for="desk-note">DESK NOTE</label><textarea id="desk-note" rows="2" placeholder="Badge issued, special access, equipment handover…" data-desk-note></textarea><button data-save-note>Save note</button></div>
+          </article>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="member-modal" data-member-modal aria-hidden="true"><div class="member-modal-card gold-frame" role="dialog" aria-modal="true" aria-label="Replace delegate"><button class="modal-close" data-close-modal aria-label="Close">×</button><span class="eyebrow">ROSTER UPDATE</span><h2>Replace delegate</h2><p>Original: <strong data-original-member></strong></p><label>Replacement name<input data-replacement-name placeholder="Full name"></label><label>Student ID<input data-replacement-id placeholder="Registration number"></label><label>Contact number<input data-replacement-phone placeholder="Mobile / WhatsApp"></label><div class="modal-actions"><button class="button ghost" data-close-modal>Cancel</button><button class="button primary" data-save-replacement>Save replacement</button></div></div></div>
+  <div class="search-dialog" data-search-dialog aria-hidden="true"><div class="search-modal" role="dialog" aria-modal="true" aria-label="Quick search"><div class="search-field"><span>⌕</span><input type="search" placeholder="Search a team, member or student ID…" data-global-search><kbd>ESC</kbd></div><div class="search-results" data-search-results><p>Start typing to search the finalist roster.</p></div></div></div>
+  <div class="toast" role="status" aria-live="polite" data-toast></div>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
