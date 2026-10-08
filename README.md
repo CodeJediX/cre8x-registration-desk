@@ -2,6 +2,11 @@
 
 A responsive four-page redesign of the Cre8x registration desk with a black-and-gold Greek technology art direction.
 
+## Live demo
+
+- Website: https://codejedix.github.io/cre8x-registration-desk/
+- Source: https://github.com/CodeJediX/cre8x-registration-desk
+
 ## Pages
 
 - `index.html` — live event overview
