@@ -26,7 +26,7 @@ A responsive four-page redesign of the Cre8x registration desk with a black-and-
 - Cre8x 3.0 official artwork integrated locally
 - Cinematic glitch, orbital HUD, particle, scanline, and live-progress preloader
 - Page-specific Olympian character compositions
-- Password-gated registration reset on the dashboard and Reports page (`16672`)
+- Password-gated reset for all teams or one selected team on the dashboard and Reports page (`16672`)
 - Shared Supabase persistence with automatic local-storage fallback
 - Visible live/syncing/offline backend status in the sidebar
 

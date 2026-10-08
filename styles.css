@@ -933,8 +933,10 @@ body[data-page="checkin"] [data-confirm-team] { box-shadow: 0 0 24px rgba(212,17
 .secure-reset-modal.open { opacity: 1; visibility: visible; pointer-events: auto; }
 .secure-reset-card {
   width: min(500px, 100%);
+  max-height: calc(100vh - 32px);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 36px 38px 26px;
   border: 1px solid rgba(212,175,55,.42);
   background:
@@ -954,6 +956,23 @@ body[data-page="checkin"] [data-confirm-team] { box-shadow: 0 0 24px rgba(212,17
 .reset-lock span { position: absolute; top: 0; width: 42px; height: 42px; border: 2px solid var(--gold); border-bottom: 0; border-radius: 22px 22px 0 0; box-shadow: 0 0 18px rgba(212,175,55,.15); }
 .reset-lock i { width: 61px; height: 47px; display: grid; place-items: center; position: relative; z-index: 1; border: 1px solid var(--gold); background: #151006; color: var(--gold-bright); font: normal 22px var(--display); box-shadow: 0 0 22px rgba(212,175,55,.1); }
 .secure-reset-card label { display: block; margin-bottom: 7px; color: var(--gold); font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
+.reset-scope { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 17px; padding: 0; border: 0; }
+.reset-scope legend { grid-column: 1 / -1; width: 100%; margin-bottom: 7px; color: var(--gold); font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
+.secure-reset-card .scope-option { min-height: 67px; display: grid; grid-template-columns: 18px 1fr; align-items: center; gap: 9px; margin: 0; padding: 10px 11px; border: 1px solid rgba(212,175,55,.2); background: #08080a; color: var(--ivory); cursor: pointer; letter-spacing: 0; text-transform: none; transition: border-color .2s, background .2s, box-shadow .2s; }
+.secure-reset-card .scope-option:hover { border-color: rgba(212,175,55,.55); }
+.secure-reset-card .scope-option:has(input:checked) { border-color: var(--gold); background: linear-gradient(145deg, rgba(212,175,55,.12), rgba(8,8,10,.94)); box-shadow: inset 2px 0 var(--gold), 0 0 15px rgba(212,175,55,.06); }
+.scope-option input { width: 14px; height: 14px; margin: 0; accent-color: var(--gold); }
+.scope-option span { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.scope-option b { color: var(--gold-bright); font-size: 12px; letter-spacing: .04em; }
+.scope-option small { color: #716a5f; font-size: 9px; font-weight: 500; line-height: 1.25; letter-spacing: .02em; }
+.reset-team-picker { margin: -1px 0 17px; padding: 12px; border: 1px solid rgba(212,175,55,.2); border-top: 2px solid var(--gold); background: rgba(212,175,55,.035); animation: teamPickerReveal .24s var(--ease) both; }
+.reset-team-picker[hidden] { display: none; }
+.reset-select-shell { height: 46px; display: grid; grid-template-columns: 35px 1fr 20px; align-items: center; padding: 0 10px; border: 1px solid rgba(212,175,55,.27); background: #070708; }
+.reset-select-shell > span { color: var(--gold); font: 18px var(--display); }
+.reset-select-shell select { width: 100%; height: 100%; border: 0; outline: 0; appearance: none; background: transparent; color: var(--ivory); font: 600 13px var(--sans); }
+.reset-select-shell select option { background: #0d0c0f; color: var(--ivory); }
+.reset-select-shell > i { color: var(--gold); font-style: normal; text-align: center; }
+.secure-reset-card form > label[for="reset-password"] { margin-top: 2px; }
 .password-field { height: 51px; display: grid; grid-template-columns: 42px 1fr 18px; align-items: center; padding: 0 13px; border: 1px solid rgba(212,175,55,.28); background: #070708; transition: border-color .2s, box-shadow .2s; }
 .password-field:focus-within { border-color: var(--gold); box-shadow: 0 0 20px rgba(212,175,55,.09); }
 .password-field > span { color: var(--gold); font-size: 20px; }
@@ -980,6 +999,7 @@ body[data-page="checkin"] [data-confirm-team] { box-shadow: 0 0 24px rgba(212,17
 @keyframes profileShimmer { 0%,20% { background-position: 160% 0; opacity: 0; } 48% { opacity: 1; } 75%,100% { background-position: -80% 0; opacity: 0; } }
 @keyframes accessDenied { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 55% { transform: translateX(7px); } 80% { transform: translateX(-4px); } }
 @keyframes backendPulse { 0%,100% { opacity: .4; transform: scale(.75); } 50% { opacity: 1; transform: scale(1.2); } }
+@keyframes teamPickerReveal { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 620px) {
   .loader-reticle { width: 48px; height: 48px; }
@@ -993,6 +1013,8 @@ body[data-page="checkin"] [data-confirm-team] { box-shadow: 0 0 24px rgba(212,17
   .secure-reset-card { padding: 31px 22px 23px; }
   .secure-reset-card h2 { font-size: 23px; }
   .reset-lock { width: 58px; transform: scale(.85); transform-origin: top right; margin-left: 6px; }
+  .reset-scope { grid-template-columns: 1fr; }
+  .secure-reset-card .scope-option { min-height: 57px; }
   .reset-actions { grid-template-columns: 1fr; }
 }
 

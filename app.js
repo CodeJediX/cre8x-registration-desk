@@ -309,12 +309,27 @@ function initSecureReset() {
         <div class="reset-lock" aria-hidden="true"><span></span><i>Ω</i></div>
         <span class="eyebrow">RESTRICTED COMMAND</span>
         <h2 id="reset-title">Reset registration records?</h2>
-        <p>This clears every check-in, attendance mark, substitution, and desk note on this device.</p>
+        <p data-reset-description>Choose whether to restore every team or only one selected team to its original registration state.</p>
         <form data-reset-form>
+          <fieldset class="reset-scope">
+            <legend>Reset scope</legend>
+            <label class="scope-option">
+              <input type="radio" name="reset-scope" value="all" checked>
+              <span><b>All teams</b><small>Clear the complete registration desk</small></span>
+            </label>
+            <label class="scope-option">
+              <input type="radio" name="reset-scope" value="team">
+              <span><b>Selected team</b><small>Keep every other team unchanged</small></span>
+            </label>
+          </fieldset>
+          <div class="reset-team-picker" data-reset-team-picker hidden>
+            <label for="reset-team-select">Team to restore</label>
+            <div class="reset-select-shell"><span aria-hidden="true">Ω</span><select id="reset-team-select" data-reset-team-select></select><i aria-hidden="true">⌄</i></div>
+          </div>
           <label for="reset-password">Command password</label>
           <div class="password-field"><span aria-hidden="true">⌁</span><input id="reset-password" data-reset-password type="password" inputmode="numeric" autocomplete="off" placeholder="Enter access code" required><i aria-hidden="true"></i></div>
           <small class="reset-error" data-reset-error aria-live="polite"></small>
-          <div class="reset-actions"><button class="button ghost" type="button" data-close-reset>Cancel</button><button class="button danger-button" type="submit">Authorize reset</button></div>
+          <div class="reset-actions"><button class="button ghost" type="button" data-close-reset>Cancel</button><button class="button danger-button" type="submit" data-reset-submit>Reset all teams</button></div>
         </form>
         <div class="reset-clearance" aria-hidden="true"><i></i><span>LEVEL Ω CLEARANCE REQUIRED</span><i></i></div>
       </section>
@@ -325,10 +340,30 @@ function initSecureReset() {
   const card = modal.querySelector(".secure-reset-card");
   const input = modal.querySelector("[data-reset-password]");
   const error = modal.querySelector("[data-reset-error]");
+  const description = modal.querySelector("[data-reset-description]");
+  const teamPicker = modal.querySelector("[data-reset-team-picker]");
+  const teamSelect = modal.querySelector("[data-reset-team-select]");
+  const submitButton = modal.querySelector("[data-reset-submit]");
+  const scopeInputs = modal.querySelectorAll('input[name="reset-scope"]');
+  const selectedScope = () => modal.querySelector('input[name="reset-scope"]:checked')?.value || "all";
+  const updateScope = () => {
+    const isTeam = selectedScope() === "team";
+    teamPicker.hidden = !isTeam;
+    teamSelect.required = isTeam;
+    description.textContent = isTeam
+      ? "Only the chosen team's check-in, attendance, substitutions, and desk note will be restored."
+      : "Every team's check-in, attendance, substitutions, and desk notes will be restored.";
+    submitButton.textContent = isTeam ? "Reset selected team" : "Reset all teams";
+  };
   const open = () => {
     input.value = "";
     error.textContent = "";
     card.classList.remove("denied");
+    teamSelect.innerHTML = state.teams.map(team => `<option value="${escapeHtml(team.id)}">${escapeHtml(team.id)} · ${escapeHtml(team.name)}</option>`).join("");
+    teamSelect.value = state.teams.some(team => team.id === activeTeamId) ? activeTeamId : state.teams[0].id;
+    const allScope = modal.querySelector('input[name="reset-scope"][value="all"]');
+    if (allScope) allScope.checked = true;
+    updateScope();
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
     document.body.classList.add("modal-open");
@@ -341,6 +376,7 @@ function initSecureReset() {
   };
 
   triggers.forEach(button => button.addEventListener("click", open));
+  scopeInputs.forEach(option => option.addEventListener("change", updateScope));
   modal.querySelectorAll("[data-close-reset]").forEach(button => button.addEventListener("click", close));
   modal.addEventListener("click", event => { if (event.target === modal) close(); });
   document.addEventListener("keydown", event => { if (event.key === "Escape" && modal.classList.contains("open")) close(); });
@@ -354,8 +390,19 @@ function initSecureReset() {
       input.select();
       return;
     }
-    state = { teams: normalizeSeed() };
-    saveState("All registration records were securely reset.");
+    if (selectedScope() === "team") {
+      const cleanTeam = normalizeSeed().find(team => team.id === teamSelect.value);
+      const teamIndex = state.teams.findIndex(team => team.id === teamSelect.value);
+      if (!cleanTeam || teamIndex < 0) {
+        error.textContent = "SELECT A VALID TEAM TO CONTINUE";
+        return;
+      }
+      state.teams.splice(teamIndex, 1, cleanTeam);
+      saveState(`${cleanTeam.name} was securely restored to its starting state.`);
+    } else {
+      state = { teams: normalizeSeed() };
+      saveState("All registration records were securely reset.");
+    }
     close();
     renderCurrentPage();
   });
