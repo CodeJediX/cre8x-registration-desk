@@ -506,7 +506,7 @@ function initCheckin() {
   document.querySelector("[data-prev-team]")?.addEventListener("click", () => stepTeam(-1));
   document.querySelector("[data-next-team]")?.addEventListener("click", () => stepTeam(1));
   document.querySelector("[data-mark-all]")?.addEventListener("click", () => { currentTeam().members.forEach(m => m.present = true); saveState("Every delegate in this team is marked present."); renderCheckinTeam(); });
-  document.querySelector("[data-confirm-team]")?.addEventListener("click", confirmCurrentTeam);
+  document.querySelectorAll("[data-confirm-team]").forEach(button => button.addEventListener("click", confirmCurrentTeam));
   document.querySelector("[data-save-note]")?.addEventListener("click", () => { currentTeam().notes = document.querySelector("[data-desk-note]").value.trim(); saveState("Desk note saved."); });
   document.querySelectorAll("[data-open-manifest]").forEach(button => button.addEventListener("click", () => openManifestModal(button)));
   document.querySelectorAll("[data-close-manifest]").forEach(button => button.addEventListener("click", closeManifestModal));
@@ -610,6 +610,12 @@ function renderCheckinTeam() {
   setText("[data-manifest-launch-total]", team.members.length);
   setText("[data-manifest-launch-present]", present);
   setText("[data-manifest-launch-status]", team.checkedIn ? "VERIFIED" : "AWAITING");
+  setText("[data-manifest-clearance]", team.checkedIn ? `Verified at ${team.checkedInAt || "registration desk"}` : present ? `${present} delegate${present === 1 ? "" : "s"} present · Ready to confirm` : "Mark at least one delegate present");
+  document.querySelectorAll("[data-confirm-team]").forEach(button => {
+    button.disabled = team.checkedIn;
+    button.classList.toggle("is-verified", team.checkedIn);
+    button.innerHTML = team.checkedIn ? '<i aria-hidden="true">✓</i> Team verified' : 'Confirm team <i aria-hidden="true">↗</i>';
+  });
   const list = document.querySelector("[data-member-list]");
   if (list) list.innerHTML = team.members.map((member, index) => `<div class="member-row"><span class="member-no">${String(index + 1).padStart(2, "0")}</span><div class="member-identity"><strong>${escapeHtml(member.name)}${member.substituted ? " · REPLACEMENT" : ""}</strong><small>${escapeHtml(member.role)} · ${escapeHtml(member.phone)}</small></div><div class="member-academic"><span>${escapeHtml(member.sid)}</span><small>${escapeHtml(member.degree)}</small></div><button class="attendance-toggle ${member.present ? "" : "absent"}" data-attendance="${member.id}">${member.present ? "● PRESENT" : "○ ABSENT"}</button><button class="more-button" data-replace="${member.id}" aria-label="Replace ${escapeHtml(member.name)}">•••</button></div>`).join("");
   list?.querySelectorAll("[data-attendance]").forEach(button => button.addEventListener("click", () => { const member = team.members.find(m => m.id === button.dataset.attendance); member.present = !member.present; saveState(`${member.name} marked ${member.present ? "present" : "absent"}.`); renderCheckinTeam(); }));
