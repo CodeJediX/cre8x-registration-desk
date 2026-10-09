@@ -29,7 +29,8 @@ A responsive four-page redesign of the Cre8x registration desk with a black-and-
 - Password-gated reset for all teams or one selected team on the dashboard and Reports page (`16672`)
 - Shared Supabase persistence with automatic local-storage fallback
 - Visible live/syncing/offline backend status in the sidebar
-- Native full-screen command available from every page
+- Native full-screen command with responsive expand/exit controls on every page
+- Centered, accessible delegate manifest with background blur, focus trapping, internal scrolling, and responsive layouts
 
 Lunch preference fields, meal controls, and meal reporting have been removed.
 

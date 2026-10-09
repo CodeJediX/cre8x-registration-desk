@@ -77,6 +77,8 @@ const normalizeSeed = () => SEED_TEAMS.map(team => ({
 let state = loadState();
 let activeTeamId = new URLSearchParams(location.search).get("team") || state.teams[0].id;
 let replacementTarget = null;
+let manifestReturnFocus = null;
+let memberReturnFocus = null;
 let backendReady = false;
 let backendRevision = 0;
 let backendWriteTimer = null;
@@ -306,14 +308,23 @@ function initFullscreenToggle() {
   const requestFullscreen = target.requestFullscreen || target.webkitRequestFullscreen;
   const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
   const fullscreenSupported = document.fullscreenEnabled ?? document.webkitFullscreenEnabled ?? Boolean(requestFullscreen);
-  const container = document.querySelector(".sidebar-foot");
-  if (!container || !requestFullscreen || !exitFullscreen || !fullscreenSupported) return;
+  const container = document.querySelector(".sidebar-foot") || document.querySelector(".topbar-actions");
+  if (!container) return;
 
   const button = document.createElement("button");
   button.type = "button";
   button.className = "fullscreen-toggle";
-  button.innerHTML = '<i aria-hidden="true">⛶</i><span>Full screen</span>';
-  container.prepend(button);
+  button.innerHTML = `<span class="fullscreen-icon fullscreen-expand" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5"/></svg></span><span class="fullscreen-icon fullscreen-collapse" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3v5H3M16 3v5h5M21 16h-5v5M3 16h5v5"/></svg></span><span class="fullscreen-label">Full screen</span>`;
+  const liveChip = container.querySelector(".live-chip");
+  container.insertBefore(button, liveChip || container.firstChild);
+
+  if (!requestFullscreen || !exitFullscreen || !fullscreenSupported) {
+    button.disabled = true;
+    button.setAttribute("aria-label", "Full screen is not supported by this browser");
+    button.title = "Full screen is not supported by this browser";
+    button.querySelector(".fullscreen-label").textContent = "Unavailable";
+    return;
+  }
 
   const update = () => {
     const active = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
@@ -321,7 +332,7 @@ function initFullscreenToggle() {
     button.setAttribute("aria-pressed", String(active));
     button.setAttribute("aria-label", active ? "Exit full screen" : "Enter full screen");
     button.title = active ? "Exit full screen" : "Enter full screen";
-    button.querySelector("span").textContent = active ? "Exit screen" : "Full screen";
+    button.querySelector(".fullscreen-label").textContent = active ? "Exit screen" : "Full screen";
   };
 
   button.addEventListener("click", async () => {
@@ -487,17 +498,92 @@ function currentTeam() { return state.teams.find(team => team.id === activeTeamI
 function initCheckin() {
   const select = document.querySelector("[data-team-select]");
   if (!select) return;
+  const requestedTeamId = new URLSearchParams(location.search).get("team");
+  const hasValidRequestedTeam = Boolean(requestedTeamId && state.teams.some(team => team.id === requestedTeamId));
   select.innerHTML = state.teams.map(team => `<option value="${team.id}">${team.id} · ${escapeHtml(team.name)} ${team.checkedIn ? "— VERIFIED" : "— AWAITING"}</option>`).join("");
   select.value = currentTeam().id;
-  select.addEventListener("change", () => { activeTeamId = select.value; history.replaceState({}, "", `?team=${activeTeamId}`); renderCheckinTeam(); });
+  select.addEventListener("change", () => { activeTeamId = select.value; history.replaceState({}, "", `?team=${activeTeamId}`); renderCheckinTeam(); openManifestModal(select); });
   document.querySelector("[data-prev-team]")?.addEventListener("click", () => stepTeam(-1));
   document.querySelector("[data-next-team]")?.addEventListener("click", () => stepTeam(1));
   document.querySelector("[data-mark-all]")?.addEventListener("click", () => { currentTeam().members.forEach(m => m.present = true); saveState("Every delegate in this team is marked present."); renderCheckinTeam(); });
   document.querySelector("[data-confirm-team]")?.addEventListener("click", confirmCurrentTeam);
   document.querySelector("[data-save-note]")?.addEventListener("click", () => { currentTeam().notes = document.querySelector("[data-desk-note]").value.trim(); saveState("Desk note saved."); });
+  document.querySelectorAll("[data-open-manifest]").forEach(button => button.addEventListener("click", () => openManifestModal(button)));
+  document.querySelectorAll("[data-close-manifest]").forEach(button => button.addEventListener("click", closeManifestModal));
   document.querySelectorAll("[data-close-modal]").forEach(el => el.addEventListener("click", closeMemberModal));
   document.querySelector("[data-save-replacement]")?.addEventListener("click", saveReplacement);
+  const manifestModal = document.querySelector("[data-manifest-modal]");
+  const memberModal = document.querySelector("[data-member-modal]");
+  if (manifestModal) manifestModal.inert = true;
+  if (memberModal) memberModal.inert = true;
+  manifestModal?.addEventListener("click", event => { if (event.target === manifestModal) closeManifestModal(); });
+  memberModal?.addEventListener("click", event => { if (event.target === memberModal) closeMemberModal(); });
+  document.addEventListener("keydown", handleCheckinModalKeys);
+  const closeManifestAfterFullscreenExit = () => {
+    const modal = document.querySelector("[data-manifest-modal]");
+    const fullscreenActive = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+    if (modal?.classList.contains("open") && modal.dataset.openedFullscreen === "true" && !fullscreenActive) closeManifestModal();
+  };
+  document.addEventListener("fullscreenchange", closeManifestAfterFullscreenExit);
+  document.addEventListener("webkitfullscreenchange", closeManifestAfterFullscreenExit);
   renderCheckinTeam();
+  if (hasValidRequestedTeam) setTimeout(() => openManifestModal(select), 260);
+}
+
+function focusableElements(container) {
+  if (!container) return [];
+  return [...container.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+    .filter(element => !element.hidden && element.offsetParent !== null);
+}
+
+function openManifestModal(trigger) {
+  const modal = document.querySelector("[data-manifest-modal]");
+  const dialog = modal?.querySelector("[role='dialog']");
+  if (!modal || !dialog) return;
+  if (!modal.classList.contains("open")) manifestReturnFocus = trigger instanceof HTMLElement ? trigger : document.activeElement;
+  modal.inert = false;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  modal.dataset.openedFullscreen = String(Boolean(document.fullscreenElement || document.webkitFullscreenElement));
+  document.body.classList.add("manifest-open");
+  document.querySelector(".app-shell")?.setAttribute("inert", "");
+  setTimeout(() => modal.querySelector("[data-close-manifest]")?.focus(), 60);
+}
+
+function closeManifestModal() {
+  const modal = document.querySelector("[data-manifest-modal]");
+  if (!modal?.classList.contains("open")) return;
+  if (document.querySelector("[data-member-modal]")?.classList.contains("open")) closeMemberModal(false);
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  modal.inert = true;
+  document.body.classList.remove("manifest-open");
+  document.querySelector(".app-shell")?.removeAttribute("inert");
+  const focusTarget = manifestReturnFocus;
+  manifestReturnFocus = null;
+  setTimeout(() => focusTarget?.focus?.(), 30);
+}
+
+function handleCheckinModalKeys(event) {
+  const memberModal = document.querySelector("[data-member-modal]");
+  const manifestModal = document.querySelector("[data-manifest-modal]");
+  const memberOpen = memberModal?.classList.contains("open");
+  const manifestOpen = manifestModal?.classList.contains("open");
+  if (!memberOpen && !manifestOpen) return;
+
+  if (event.key === "Escape") {
+    event.preventDefault();
+    if (memberOpen) closeMemberModal();
+    else closeManifestModal();
+    return;
+  }
+  if (event.key !== "Tab") return;
+  const activeContainer = memberOpen ? memberModal.querySelector("[role='dialog']") : manifestModal.querySelector("[role='dialog']");
+  const focusable = focusableElements(activeContainer);
+  if (!focusable.length) { event.preventDefault(); activeContainer.focus(); return; }
+  const first = focusable[0]; const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
 }
 
 function stepTeam(direction) {
@@ -505,14 +591,25 @@ function stepTeam(direction) {
   index = (index + direction + state.teams.length) % state.teams.length;
   activeTeamId = state.teams[index].id;
   const select = document.querySelector("[data-team-select]"); if (select) select.value = activeTeamId;
-  history.replaceState({}, "", `?team=${activeTeamId}`); renderCheckinTeam();
+  history.replaceState({}, "", `?team=${activeTeamId}`); renderCheckinTeam(); openManifestModal(document.activeElement);
 }
 
 function renderCheckinTeam() {
   const team = currentTeam(); const present = team.members.filter(m => m.present).length;
   const profile = document.querySelector("[data-team-profile]");
   if (profile) profile.innerHTML = `<span class="eyebrow">ACTIVE ALLIANCE</span><div class="team-badge-large"><span>${escapeHtml(team.id)}</span></div><h2>${escapeHtml(team.name)}</h2><span class="institution">${escapeHtml(team.university)}</span><div class="team-meta-list"><div><span>Round I rank</span><b>#${team.rank}</b></div><div><span>Qualifying score</span><b>${team.score.toFixed(2)}</b></div><div><span>Delegation</span><b>${team.members.length} members</b></div><div><span>Present now</span><b>${present} / ${team.members.length}</b></div></div><div class="team-status-large ${team.checkedIn ? "checked" : ""}"><i></i><span>${team.checkedIn ? "TEAM VERIFIED" : "AWAITING CONFIRMATION"}<small>${team.checkedIn ? `Cleared at ${escapeHtml(team.checkedInAt || "desk")}` : "Complete the manifest to clear this team"}</small></span></div>`;
-  setText("[data-manifest-title]", `${team.id} manifest`); setText("[data-member-count]", `${present} / ${team.members.length} present`);
+  setText("[data-manifest-title]", `${team.name} manifest`); setText("[data-member-count]", `${present} / ${team.members.length} present`);
+  setText("[data-manifest-description]", `${team.id} · Verify every registered delegate from ${team.university} before clearing this team.`);
+  setText("[data-manifest-team]", `${team.id} · ${team.name}`);
+  setText("[data-manifest-institution]", team.university);
+  setText("[data-manifest-score]", `${team.score.toFixed(2)} · Rank #${team.rank}`);
+  setText("[data-manifest-status]", team.checkedIn ? "VERIFIED" : "AWAITING");
+  setText("[data-manifest-launch-code]", team.id);
+  setText("[data-manifest-launch-title]", team.name);
+  setText("[data-manifest-launch-university]", `${team.university} · Review the complete registration manifest before gate clearance.`);
+  setText("[data-manifest-launch-total]", team.members.length);
+  setText("[data-manifest-launch-present]", present);
+  setText("[data-manifest-launch-status]", team.checkedIn ? "VERIFIED" : "AWAITING");
   const list = document.querySelector("[data-member-list]");
   if (list) list.innerHTML = team.members.map((member, index) => `<div class="member-row"><span class="member-no">${String(index + 1).padStart(2, "0")}</span><div class="member-identity"><strong>${escapeHtml(member.name)}${member.substituted ? " · REPLACEMENT" : ""}</strong><small>${escapeHtml(member.role)} · ${escapeHtml(member.phone)}</small></div><div class="member-academic"><span>${escapeHtml(member.sid)}</span><small>${escapeHtml(member.degree)}</small></div><button class="attendance-toggle ${member.present ? "" : "absent"}" data-attendance="${member.id}">${member.present ? "● PRESENT" : "○ ABSENT"}</button><button class="more-button" data-replace="${member.id}" aria-label="Replace ${escapeHtml(member.name)}">•••</button></div>`).join("");
   list?.querySelectorAll("[data-attendance]").forEach(button => button.addEventListener("click", () => { const member = team.members.find(m => m.id === button.dataset.attendance); member.present = !member.present; saveState(`${member.name} marked ${member.present ? "present" : "absent"}.`); renderCheckinTeam(); }));
@@ -534,15 +631,32 @@ function openMemberModal(teamId, memberId) {
   const member = state.teams.find(t => t.id === teamId).members.find(m => m.id === memberId);
   setText("[data-original-member]", member.name);
   document.querySelector("[data-replacement-name]").value = ""; document.querySelector("[data-replacement-id]").value = ""; document.querySelector("[data-replacement-phone]").value = "";
-  const modal = document.querySelector("[data-member-modal]"); modal?.classList.add("open"); modal?.setAttribute("aria-hidden", "false");
+  memberReturnFocus = document.activeElement;
+  const modal = document.querySelector("[data-member-modal]");
+  if (!modal) return;
+  modal.inert = false;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("manifest-open");
+  setTimeout(() => document.querySelector("[data-replacement-name]")?.focus(), 50);
 }
-function closeMemberModal() { const modal = document.querySelector("[data-member-modal]"); modal?.classList.remove("open"); modal?.setAttribute("aria-hidden", "true"); replacementTarget = null; }
+function closeMemberModal(restoreFocus = true) {
+  const modal = document.querySelector("[data-member-modal]");
+  modal?.classList.remove("open");
+  modal?.setAttribute("aria-hidden", "true");
+  if (modal) modal.inert = true;
+  replacementTarget = null;
+  if (!document.querySelector("[data-manifest-modal]")?.classList.contains("open")) document.body.classList.remove("manifest-open");
+  const focusTarget = memberReturnFocus;
+  memberReturnFocus = null;
+  if (restoreFocus) setTimeout(() => focusTarget?.focus?.(), 30);
+}
 function saveReplacement() {
   const name = document.querySelector("[data-replacement-name]").value.trim();
   if (!name || !replacementTarget) { showToast("Enter the replacement delegate's name."); return; }
   const team = state.teams.find(t => t.id === replacementTarget.teamId); const member = team.members.find(m => m.id === replacementTarget.memberId);
   member.originalName ||= member.name; member.name = name; member.sid = document.querySelector("[data-replacement-id]").value.trim() || member.sid; member.phone = document.querySelector("[data-replacement-phone]").value.trim() || member.phone; member.substituted = true;
-  saveState(`${name} added to ${team.name}.`); closeMemberModal(); renderCheckinTeam();
+  saveState(`${name} added to ${team.name}.`); closeMemberModal(false); renderCheckinTeam(); document.querySelector("[data-manifest-modal] [role='dialog']")?.focus();
 }
 
 function initTeams() {

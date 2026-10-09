@@ -37,14 +37,44 @@
 
         <section class="active-team-layout reveal delay-2">
           <article class="team-profile gold-frame" data-team-profile></article>
-          <article class="member-manifest panel">
-            <div class="section-heading"><div><span class="eyebrow">DELEGATE MANIFEST</span><h2 data-manifest-title>Team members</h2></div><span class="manifest-count" data-member-count>0 / 0 present</span></div>
-            <div class="member-list" data-member-list></div>
-            <div class="desk-notes"><label for="desk-note">DESK NOTE</label><textarea id="desk-note" rows="2" placeholder="Badge issued, special access, equipment handover…" data-desk-note></textarea><button data-save-note>Save note</button></div>
+          <article class="manifest-launch panel" aria-labelledby="manifest-launch-title">
+            <div class="manifest-launch-head"><span class="eyebrow">DELEGATE MANIFEST</span><span class="manifest-ready"><i></i> READY TO VERIFY</span></div>
+            <div class="manifest-launch-sigil" aria-hidden="true"><span data-manifest-launch-code>TM-01</span></div>
+            <div class="manifest-launch-copy">
+              <span>SELECTED ALLIANCE</span>
+              <h2 id="manifest-launch-title" data-manifest-launch-title>Team manifest</h2>
+              <p data-manifest-launch-university>Review registered delegates, confirm attendance, manage replacements, and record the desk handover.</p>
+            </div>
+            <div class="manifest-launch-stats" aria-label="Selected team manifest summary">
+              <span><small>DELEGATES</small><b data-manifest-launch-total>0</b></span>
+              <span><small>PRESENT</small><b data-manifest-launch-present>0</b></span>
+              <span><small>STATUS</small><b data-manifest-launch-status>AWAITING</b></span>
+            </div>
+            <button class="button primary manifest-open-button" type="button" data-open-manifest>Open delegate manifest <i aria-hidden="true">↗</i></button>
           </article>
         </section>
       </main>
     </div>
+  </div>
+
+  <div class="manifest-modal" data-manifest-modal aria-hidden="true">
+    <section class="member-manifest manifest-dialog gold-frame" role="dialog" aria-modal="true" aria-labelledby="manifest-dialog-title" aria-describedby="manifest-dialog-description" tabindex="-1">
+      <button class="manifest-close" type="button" data-close-manifest aria-label="Close delegate manifest"><span aria-hidden="true">×</span></button>
+      <header class="manifest-dialog-head">
+        <div class="manifest-title-block"><span class="eyebrow">DELEGATE MANIFEST · LIVE ROSTER</span><h2 id="manifest-dialog-title" data-manifest-title>Team members</h2><p id="manifest-dialog-description" data-manifest-description>Verify every registered delegate before clearing this team.</p></div>
+        <span class="manifest-count" data-member-count>0 / 0 present</span>
+      </header>
+      <div class="manifest-overview" aria-label="Team registration summary">
+        <span><small>ALLIANCE</small><strong data-manifest-team>—</strong></span>
+        <span><small>INSTITUTION</small><strong data-manifest-institution>—</strong></span>
+        <span><small>QUALIFYING</small><strong data-manifest-score>—</strong></span>
+        <span><small>CHECK-IN</small><strong data-manifest-status>AWAITING</strong></span>
+      </div>
+      <div class="manifest-scroll-region">
+        <div class="member-list" data-member-list></div>
+        <div class="desk-notes"><label for="desk-note">DESK NOTE</label><textarea id="desk-note" rows="2" placeholder="Badge issued, special access, equipment handover…" data-desk-note></textarea><button type="button" data-save-note>Save note</button></div>
+      </div>
+    </section>
   </div>
 
   <div class="member-modal" data-member-modal aria-hidden="true"><div class="member-modal-card gold-frame" role="dialog" aria-modal="true" aria-label="Replace delegate"><button class="modal-close" data-close-modal aria-label="Close">×</button><span class="eyebrow">ROSTER UPDATE</span><h2>Replace delegate</h2><p>Original: <strong data-original-member></strong></p><label>Replacement name<input data-replacement-name placeholder="Full name"></label><label>Student ID<input data-replacement-id placeholder="Registration number"></label><label>Contact number<input data-replacement-phone placeholder="Mobile / WhatsApp"></label><div class="modal-actions"><button class="button ghost" data-close-modal>Cancel</button><button class="button primary" data-save-replacement>Save replacement</button></div></div></div>
