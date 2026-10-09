@@ -295,9 +295,46 @@ function initShell() {
   document.addEventListener("click", event => {
     if (innerWidth <= 820 && document.querySelector(".sidebar.open") && !event.target.closest(".sidebar") && !event.target.closest("[data-menu-toggle]")) document.querySelector(".sidebar").classList.remove("open");
   });
+  initFullscreenToggle();
   initSearch();
   document.querySelectorAll("[data-export-csv]").forEach(button => button.addEventListener("click", exportCsv));
   initSecureReset();
+}
+
+function initFullscreenToggle() {
+  const target = document.documentElement;
+  const requestFullscreen = target.requestFullscreen || target.webkitRequestFullscreen;
+  const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+  const fullscreenSupported = document.fullscreenEnabled ?? document.webkitFullscreenEnabled ?? Boolean(requestFullscreen);
+  const container = document.querySelector(".sidebar-foot");
+  if (!container || !requestFullscreen || !exitFullscreen || !fullscreenSupported) return;
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "fullscreen-toggle";
+  button.innerHTML = '<i aria-hidden="true">⛶</i><span>Full screen</span>';
+  container.prepend(button);
+
+  const update = () => {
+    const active = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+    button.setAttribute("aria-label", active ? "Exit full screen" : "Enter full screen");
+    button.title = active ? "Exit full screen" : "Enter full screen";
+    button.querySelector("span").textContent = active ? "Exit screen" : "Full screen";
+  };
+
+  button.addEventListener("click", async () => {
+    try {
+      if (document.fullscreenElement || document.webkitFullscreenElement) await exitFullscreen.call(document);
+      else await requestFullscreen.call(target);
+    } catch (_) {
+      showToast("Full screen was blocked by the browser. Try the button again.");
+    }
+  });
+  document.addEventListener("fullscreenchange", update);
+  document.addEventListener("webkitfullscreenchange", update);
+  update();
 }
 
 function initSecureReset() {
