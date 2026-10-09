@@ -31,6 +31,7 @@ A responsive four-page redesign of the Cre8x registration desk with a black-and-
 - Visible live/syncing/offline backend status in the sidebar
 - Native full-screen command with responsive expand/exit controls on every page
 - Centered glass delegate manifest with background blur, focus trapping, internal scrolling, responsive layouts, and in-modal team confirmation
+- Persistent dark and sunlit Olympus light themes across every page, including the preloader, manifests, reports, and mobile layouts
 
 Lunch preference fields, meal controls, and meal reporting have been removed.
 

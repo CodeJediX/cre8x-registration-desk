@@ -60,6 +60,7 @@ const SEED_TEAMS = [
 ];
 
 const STORAGE_KEY = "cre8x_olympus_command_v1";
+const THEME_KEY = "cre8x_theme_v1";
 const RESET_PASSWORD = "16672";
 const BACKEND_CONFIG = window.CRE8X_BACKEND || {};
 const BACKEND_POLL_MS = 8000;
@@ -298,9 +299,40 @@ function initShell() {
     if (innerWidth <= 820 && document.querySelector(".sidebar.open") && !event.target.closest(".sidebar") && !event.target.closest("[data-menu-toggle]")) document.querySelector(".sidebar").classList.remove("open");
   });
   initFullscreenToggle();
+  initThemeToggle();
   initSearch();
   document.querySelectorAll("[data-export-csv]").forEach(button => button.addEventListener("click", exportCsv));
   initSecureReset();
+}
+
+function initThemeToggle() {
+  const container = document.querySelector(".sidebar-foot") || document.querySelector(".topbar-actions");
+  if (!container) return;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "theme-toggle";
+  button.innerHTML = `<span class="theme-icon theme-sun" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/></svg></span><span class="theme-icon theme-moon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 15.4A8.3 8.3 0 0 1 8.6 4a8.5 8.5 0 1 0 11.4 11.4Z"/></svg></span><span class="theme-label">Light mode</span>`;
+  const signal = container.querySelector(".signal");
+  container.insertBefore(button, signal || container.lastChild);
+
+  const update = () => {
+    const light = document.documentElement.dataset.theme === "light";
+    button.classList.toggle("active", light);
+    button.setAttribute("aria-pressed", String(light));
+    button.setAttribute("aria-label", light ? "Switch to dark mode" : "Switch to light mode");
+    button.title = light ? "Switch to dark mode" : "Switch to light mode";
+    button.querySelector(".theme-label").textContent = light ? "Dark mode" : "Light mode";
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.content = light ? "#f4eedf" : "#080704";
+  };
+
+  button.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = nextTheme;
+    try { localStorage.setItem(THEME_KEY, nextTheme); } catch (_) {}
+    update();
+  });
+  update();
 }
 
 function initFullscreenToggle() {
