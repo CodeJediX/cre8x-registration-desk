@@ -387,11 +387,16 @@ function renderRanking() {
 
 function renderReport() {
   const { ranking, complete } = buildRanking();
-  const leader = ranking.find(team => team.count > 0);
-  const winner = $("[data-report-winner]");
-  winner.querySelector("span").textContent = complete ? "OFFICIAL WINNER" : "PROVISIONAL LEADER";
-  winner.querySelector("strong").textContent = leader?.name || "Awaiting scores";
-  winner.querySelector("small").textContent = leader ? `${formatScore(leader.average)} / 100` : "0.00 / 100";
+  const placedTeams = ranking.filter(team => team.count > 0).slice(0, 3);
+  const officialLabels = ["OFFICIAL WINNER", "1ST RUNNER-UP", "2ND RUNNER-UP"];
+  const provisionalLabels = ["PROVISIONAL LEADER", "PROVISIONAL 1ST RUNNER-UP", "PROVISIONAL 2ND RUNNER-UP"];
+  $$('[data-podium-place]').forEach((card, index) => {
+    const team = placedTeams[index];
+    card.querySelector("span").textContent = (complete ? officialLabels : provisionalLabels)[index];
+    card.querySelector("strong").textContent = team?.name || "Awaiting scores";
+    card.querySelector("small").textContent = team ? `${formatScore(team.average)} / 100` : "0.00 / 100";
+    card.classList.toggle("is-awaiting", !team);
+  });
   $("[data-report-subtitle]").textContent = complete ? "All twenty authenticated scorecards are submitted." : "Live consolidated results; rankings remain provisional until all scorecards are submitted.";
   $("[data-report-rows]").innerHTML = ranking.map(team => {
     const hiran = scoreRows.find(row => row.team_id === team.id && row.status === "submitted" && profileCodeForRow(row) === "hiran");
@@ -418,7 +423,8 @@ function exportReportCsv() {
     const hiran = entries.find(row => profileCodeForRow(row) === "hiran");
     const pasindu = entries.find(row => profileCodeForRow(row) === "pasindu");
     const criterionAverages = SCORE_CRITERIA.map(criterion => entries.length ? (entries.reduce((sum,row) => sum + Number(row[criterion.key] || 0),0) / entries.length).toFixed(2) : "");
-    rows.push([team.rank,team.id,team.name,team.university,hiran?.total_score ?? "",pasindu?.total_score ?? "",team.average == null ? "" : team.average.toFixed(2),team.count,...criterionAverages,hiran?.notes || "",pasindu?.notes || "",complete && team.rank === 1 ? "WINNER" : complete ? "FINAL" : "PROVISIONAL"]);
+    const resultStatus = !complete ? "PROVISIONAL" : team.rank === 1 ? "WINNER" : team.rank === 2 ? "1ST RUNNER-UP" : team.rank === 3 ? "2ND RUNNER-UP" : "FINALIST";
+    rows.push([team.rank,team.id,team.name,team.university,hiran?.total_score ?? "",pasindu?.total_score ?? "",team.average == null ? "" : team.average.toFixed(2),team.count,...criterionAverages,hiran?.notes || "",pasindu?.notes || "",resultStatus]);
   });
   const csv = rows.map(row => row.map(value => `"${String(value ?? "").replaceAll('"','""')}"`).join(",")).join("\n");
   const url = URL.createObjectURL(new Blob(["\ufeff",csv],{type:"text/csv;charset=utf-8"}));

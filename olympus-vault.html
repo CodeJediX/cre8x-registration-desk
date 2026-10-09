@@ -137,7 +137,11 @@
   <div class="judge-modal report-modal" data-report-modal aria-hidden="true" inert hidden>
     <section role="dialog" aria-modal="true" aria-labelledby="report-title" class="report-dialog gold-frame">
       <header><div><span class="eyebrow">SEALED PANEL REPORT</span><h2 id="report-title">Finale adjudication ledger</h2><p data-report-subtitle>Live consolidated results from both panel seats.</p></div><button type="button" data-close-report aria-label="Close report">×</button></header>
-      <div class="report-winner" data-report-winner><span>PROVISIONAL LEADER</span><strong>Awaiting scores</strong><small>0.00 / 100</small></div>
+      <section class="report-podium" data-report-podium aria-label="Final podium standings">
+        <article class="podium-place podium-winner" data-podium-place="1"><b class="podium-medal" aria-hidden="true">I</b><span>PROVISIONAL LEADER</span><strong>Awaiting scores</strong><small>0.00 / 100</small></article>
+        <article class="podium-place podium-runner-up" data-podium-place="2"><b class="podium-medal" aria-hidden="true">II</b><span>PROVISIONAL 1ST RUNNER-UP</span><strong>Awaiting scores</strong><small>0.00 / 100</small></article>
+        <article class="podium-place podium-second-runner-up" data-podium-place="3"><b class="podium-medal" aria-hidden="true">III</b><span>PROVISIONAL 2ND RUNNER-UP</span><strong>Awaiting scores</strong><small>0.00 / 100</small></article>
+      </section>
       <div class="judge-report-table-wrap"><table class="judge-report-table"><thead><tr><th>Rank</th><th>Finalist</th><th>Hiran</th><th>Pasindu</th><th>Panel average</th><th>Coverage</th></tr></thead><tbody data-report-rows></tbody></table></div>
       <div class="criteria-report" data-criteria-report></div>
       <footer><button type="button" class="judge-secondary" data-print-report>Print report</button><button type="button" class="judge-primary" data-export-report>Export full CSV ↓</button></footer>
