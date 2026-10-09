@@ -32,6 +32,10 @@ A responsive four-page redesign of the Cre8x registration desk with a black-and-
 - Native full-screen command with responsive expand/exit controls on every page
 - Centered glass delegate manifest with background blur, focus trapping, internal scrolling, responsive layouts, and in-modal team confirmation
 - Persistent dark and sunlit Olympus light themes across every page, including the preloader, manifests, reports, and mobile layouts
+- Unlinked authenticated Olympus Vault for the two-person judging panel
+- Six-category 100-point scorecards with encrypted autosave, submission locking, private notes, panel progress, automatic rankings, and deterministic tie-breaking
+- Protected judging reports with per-judge totals, category averages, print layout, and full CSV export
+- Judge-only Supabase Auth sessions, owner-only score updates, anonymous-data denial, forced RLS, private audit snapshots, and 30-minute inactivity sign-out
 
 Lunch preference fields, meal controls, and meal reporting have been removed.
 
@@ -40,6 +44,8 @@ Lunch preference fields, meal controls, and meal reporting have been removed.
 The deployed classroom demo uses the existing **CreateX 3.0** Supabase project in the Mumbai region. The browser uses only a public publishable key; no secret or service-role key is included in this project.
 
 The `registration_state` table stores one shared live event record. Row Level Security is enabled and the demo policy permits the public registration desk to read and update that single row. The interface loads the shared state on startup, saves changes after each desk action, checks for updates every eight seconds, and falls back to the local browser cache if the network is unavailable.
+
+Judging data is isolated from the public registration state. The `judge_profiles` and `judge_scores` tables require authenticated judge accounts and enforce database-level ownership rules. Anonymous requests cannot read either table; judges can read panel totals but can update only their own scorecards. A non-exposed private audit table records each score change.
 
 This deliberately simple public-desk policy is appropriate for the lecture demonstration. Before using the application for a real event, add Supabase Auth and restrict writes to authenticated event staff.
 

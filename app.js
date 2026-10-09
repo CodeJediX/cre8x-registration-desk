@@ -303,6 +303,9 @@ function initShell() {
   initSearch();
   document.querySelectorAll("[data-export-csv]").forEach(button => button.addEventListener("click", exportCsv));
   initSecureReset();
+  document.addEventListener("keydown", event => {
+    if (event.altKey && event.shiftKey && event.code === "KeyJ") location.href = "olympus-vault.html";
+  });
 }
 
 function initThemeToggle() {

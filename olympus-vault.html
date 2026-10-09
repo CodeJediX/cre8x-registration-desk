@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080704">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://bjzhpsudslmwgatkiawy.supabase.co wss://bjzhpsudslmwgatkiawy.supabase.co; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'; form-action 'self'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests">
+  <script src="theme-init.js"></script>
+  <link rel="icon" type="image/png" href="assets/cre8x-logo.png?v=3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="judge.css">
+  <title>Olympus Vault · Cre8x Judging</title>
+</head>
+<body class="vault-body">
+  <div class="vault-backdrop" aria-hidden="true"><i></i><i></i><i></i></div>
+
+  <main class="vault-gate" data-auth-screen>
+    <section class="gate-card gold-frame" aria-labelledby="gate-title">
+      <div class="gate-brand"><img src="assets/cre8x-logo.png" alt="Cre8x 3.0"><span>RESTRICTED // ADJUDICATION CORE</span></div>
+      <div class="gate-copy">
+        <span class="eyebrow">OLYMPUS VAULT · PANEL ACCESS</span>
+        <h1 id="gate-title">Enter the<br><em>judges’ chamber.</em></h1>
+        <p>Select your sealed profile and enter your private access phrase. Sessions close automatically after 30 minutes of inactivity.</p>
+      </div>
+
+      <form class="gate-form" data-login-form novalidate>
+        <fieldset>
+          <legend>01 · Identify your panel seat</legend>
+          <div class="judge-choice-grid">
+            <button class="judge-choice" type="button" data-judge-choice="hiran" aria-pressed="false">
+              <img src="assets/judge-hiran.png" alt="Hiran Karunananda">
+              <span><b>Hiran Karunananda</b><small>Senior Technical Lead, UI/UX</small></span>
+              <i aria-hidden="true">I</i>
+            </button>
+            <button class="judge-choice" type="button" data-judge-choice="pasindu" aria-pressed="false">
+              <img src="assets/judge-pasindu.png" alt="Pasindu Madushan">
+              <span><b>Pasindu Madushan</b><small>Associate UI/UX Lead</small></span>
+              <i aria-hidden="true">II</i>
+            </button>
+          </div>
+        </fieldset>
+        <label class="vault-password">
+          <span>02 · Private access phrase</span>
+          <span class="password-shell"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5z"/></svg><input type="password" autocomplete="current-password" minlength="12" required data-password placeholder="Enter your private phrase"><button type="button" data-toggle-password aria-label="Show password">SHOW</button></span>
+        </label>
+        <p class="gate-error" role="alert" data-auth-error></p>
+        <button class="vault-enter" type="submit" data-login-button disabled><span>Unlock judging console</span><i aria-hidden="true">↗</i></button>
+      </form>
+      <footer><span><i></i> SUPABASE AUTH + ROW SECURITY</span><small>Authorized panel members only</small></footer>
+    </section>
+  </main>
+
+  <div class="judge-console" data-console hidden>
+    <header class="judge-topbar">
+      <div class="judge-brand"><img src="assets/cre8x-logo.png" alt="Cre8x 3.0"><span><b>OLYMPUS VAULT</b><small>JUDGING CONSOLE · FINAL PANEL</small></span></div>
+      <div class="judge-session">
+        <span class="judge-session-name" data-session-judge>Judge</span>
+        <span class="judge-secure-state" data-sync-state><i></i> SECURE SESSION</span>
+        <button class="judge-icon-button" type="button" data-theme-button aria-label="Switch to light mode" title="Switch theme"><span data-theme-symbol>☼</span></button>
+        <button class="judge-signout" type="button" data-signout>End session</button>
+      </div>
+    </header>
+
+    <div class="judge-layout">
+      <aside class="judge-rail">
+        <div class="active-judge-card">
+          <img data-profile-image src="assets/judge-hiran.png" alt="">
+          <span class="eyebrow">SIGNED PANELIST</span>
+          <h2 data-profile-name>Judge</h2>
+          <p data-profile-title>Panel member</p>
+        </div>
+        <div class="judge-progress-card">
+          <div><span>My progress</span><b data-my-progress>0 / 10</b></div>
+          <div class="judge-progress-track"><i data-my-progress-bar></i></div>
+          <small data-my-progress-note>Begin with any finalist</small>
+        </div>
+        <nav class="judge-team-nav" aria-label="Finalist scoring queue" data-team-nav></nav>
+      </aside>
+
+      <main class="score-stage">
+        <header class="score-stage-head">
+          <div><span class="eyebrow" data-team-kicker>FINALIST 01 · TM-01</span><h1 data-team-name>Visual Vibers</h1><p data-team-university>KDU</p></div>
+          <div class="live-total"><span>YOUR TOTAL</span><strong><b data-live-total>0</b><small>/100</small></strong><em data-score-status>DRAFT</em></div>
+        </header>
+
+        <section class="criteria-sheet" aria-labelledby="criteria-title">
+          <div class="section-heading"><div><span class="eyebrow">SCORING MATRIX</span><h2 id="criteria-title">Evaluate the experience.</h2></div><p>Use whole marks. Every criterion must be scored before submission.</p></div>
+          <div class="criteria-list" data-criteria-list></div>
+        </section>
+
+        <section class="judge-notes">
+          <label for="judge-notes"><span class="eyebrow">PANEL NOTES · PRIVATE</span><strong>Decision notes</strong><small>Capture strengths, risks, or points to revisit during deliberation.</small></label>
+          <textarea id="judge-notes" maxlength="3000" data-notes placeholder="Add private judging notes for this team…"></textarea>
+          <div><span data-note-count>0 / 3000</span><span class="autosave-state" data-autosave-state><i></i> READY</span></div>
+        </section>
+
+        <footer class="score-actions">
+          <button class="judge-secondary" type="button" data-prev-team>← Previous team</button>
+          <div class="score-lock-copy"><span data-completion-copy>Complete all six criteria to submit.</span><button class="judge-reopen" type="button" data-reopen hidden>Reopen my marks</button></div>
+          <button class="judge-primary" type="button" data-submit-score disabled>Submit final marks <span>↗</span></button>
+          <button class="judge-secondary" type="button" data-next-team>Next team →</button>
+        </footer>
+      </main>
+
+      <aside class="panel-intelligence">
+        <header><span class="eyebrow">PANEL INTELLIGENCE</span><h2>Live ranking</h2><p data-ranking-state>Waiting for submitted scorecards.</p></header>
+        <section class="leader-sigil" data-leader-sigil>
+          <span>PROVISIONAL LEADER</span><strong data-leader-name>—</strong><div><b data-leader-score>0.00</b><small>/ 100 panel avg.</small></div>
+        </section>
+        <ol class="ranking-list" data-ranking-list></ol>
+        <section class="panel-progress">
+          <div><span>Panel completion</span><b data-panel-progress>0 / 20</b></div>
+          <div class="judge-progress-track"><i data-panel-progress-bar></i></div>
+          <small>Winner becomes official after both judges submit every team. Tie-break: UX → Technical → Visual.</small>
+        </section>
+        <div class="report-actions">
+          <button type="button" data-open-report>Open full report</button>
+          <button type="button" data-export-report>Export CSV ↓</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="judge-modal" data-submit-modal aria-hidden="true" inert hidden>
+    <section role="dialog" aria-modal="true" aria-labelledby="submit-title" class="judge-dialog gold-frame">
+      <span class="eyebrow">SEAL SCORECARD</span><h2 id="submit-title">Submit these marks?</h2><p>Your score will enter the panel ranking. You can reopen it later, and every change remains tied to your authenticated account.</p>
+      <div class="submit-summary"><span data-submit-team>Team</span><strong><b data-submit-total>0</b> / 100</strong></div>
+      <div><button type="button" class="judge-secondary" data-cancel-submit>Review again</button><button type="button" class="judge-primary" data-confirm-submit>Lock & submit ↗</button></div>
+    </section>
+  </div>
+
+  <div class="judge-modal report-modal" data-report-modal aria-hidden="true" inert hidden>
+    <section role="dialog" aria-modal="true" aria-labelledby="report-title" class="report-dialog gold-frame">
+      <header><div><span class="eyebrow">SEALED PANEL REPORT</span><h2 id="report-title">Finale adjudication ledger</h2><p data-report-subtitle>Live consolidated results from both panel seats.</p></div><button type="button" data-close-report aria-label="Close report">×</button></header>
+      <div class="report-winner" data-report-winner><span>PROVISIONAL LEADER</span><strong>Awaiting scores</strong><small>0.00 / 100</small></div>
+      <div class="judge-report-table-wrap"><table class="judge-report-table"><thead><tr><th>Rank</th><th>Finalist</th><th>Hiran</th><th>Pasindu</th><th>Panel average</th><th>Coverage</th></tr></thead><tbody data-report-rows></tbody></table></div>
+      <div class="criteria-report" data-criteria-report></div>
+      <footer><button type="button" class="judge-secondary" data-print-report>Print report</button><button type="button" class="judge-primary" data-export-report>Export full CSV ↓</button></footer>
+    </section>
+  </div>
+
+  <div class="judge-toast" role="status" aria-live="polite" data-judge-toast></div>
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.min.js"></script>
+  <script src="judge.js"></script>
+</body>
+</html>
