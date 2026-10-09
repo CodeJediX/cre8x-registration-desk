@@ -217,6 +217,8 @@ function updateGlobalMetrics() {
   document.querySelectorAll("[data-progress-sigil], [data-report-donut]").forEach(el => el.style.setProperty("--progress", m.completion));
   document.querySelectorAll("[data-progress-bar]").forEach(el => el.style.width = `${m.completion}%`);
   document.querySelectorAll("[data-attendance-bar]").forEach(el => el.style.width = `${m.attendance}%`);
+  document.querySelectorAll("[data-pending-bar]").forEach(el => el.style.width = `${100 - m.completion}%`);
+  document.querySelectorAll("[data-substitution-bar]").forEach(el => el.style.width = `${Math.min(100, m.substitutions * 12.5)}%`);
 }
 
 function showToast(message) {
@@ -434,6 +436,10 @@ function initSearch() {
 }
 
 function renderDashboard() {
+  const nextTeam = state.teams.find(team => !team.checkedIn);
+  setText("[data-next-team-code]", nextTeam?.id || "Ω-10");
+  setText("[data-next-team-name]", nextTeam?.name || "All alliances cleared");
+  setText("[data-next-team-status]", nextTeam ? "AWAITING CHECK-IN" : "SUMMIT COMPLETE");
   const queue = document.querySelector("[data-queue-list]");
   if (queue) queue.innerHTML = state.teams.slice(0, 6).map((team, index) => `<div class="queue-item"><span class="queue-index">${String(index + 1).padStart(2, "0")}</span><div class="queue-team"><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(team.id)} · ${escapeHtml(team.university)}</small></div><span class="status-pill ${team.checkedIn ? "checked" : ""}">${team.checkedIn ? "● Verified" : "◇ Awaiting"}</span><a href="checkin.html?team=${team.id}" aria-label="Open ${escapeHtml(team.name)}">→</a></div>`).join("");
   const chart = document.querySelector("[data-pulse-chart]");
